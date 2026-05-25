@@ -2,6 +2,11 @@ name: RSS Alert
 
 on:
   workflow_dispatch:
+    inputs:
+      test_telegram:
+        description: Send test Telegram message only
+        required: false
+        default: "false"
   schedule:
     - cron: "*/10 * * * *"
 
@@ -33,4 +38,5 @@ jobs:
           CONFIG_PATH: config.example.yml
           DB_PATH: seen.db
           RUN_ONCE: "true"
+          TEST_TELEGRAM: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.test_telegram || 'false' }}
         run: python rss_alert.py
