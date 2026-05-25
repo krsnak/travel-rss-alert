@@ -1,2 +1,2 @@
 # travel-rss-alert
-TG notifikace RSS féédů včetně foltrů
+TG notifikace RSS feedů včetně filtrů
