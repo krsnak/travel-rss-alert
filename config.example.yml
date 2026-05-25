@@ -1,0 +1,6 @@
+feeds:
+  - url: "https://example.com/rss"
+    keywords:
+      - travel
+      - flight
+    max_items: 20
