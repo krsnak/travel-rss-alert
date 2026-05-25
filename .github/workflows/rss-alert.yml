@@ -1,0 +1,36 @@
+name: RSS Alert
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"
+
+jobs:
+  run-rss-alert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache seen database
+        uses: actions/cache@v4
+        with:
+          path: seen.db
+          key: rss-alert-seen-db-v1
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run RSS alert one-shot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CONFIG_PATH: config.example.yml
+          DB_PATH: seen.db
+          RUN_ONCE: "true"
+        run: python rss_alert.py
