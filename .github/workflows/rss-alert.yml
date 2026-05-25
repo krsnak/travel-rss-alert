@@ -7,6 +7,14 @@ on:
         description: Send test Telegram message only
         required: false
         default: "false"
+      log_level:
+        description: Logging level (DEBUG, INFO, WARNING, ERROR)
+        required: false
+        default: "INFO"
+      seed_on_first_run:
+        description: Seed all current feed items as seen when DB is empty
+        required: false
+        default: "false"
   schedule:
     - cron: "*/10 * * * *"
 
@@ -39,4 +47,6 @@ jobs:
           DB_PATH: seen.db
           RUN_ONCE: "true"
           TEST_TELEGRAM: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.test_telegram || 'false' }}
+          LOG_LEVEL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.log_level || 'INFO' }}
+          SEED_ON_FIRST_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.seed_on_first_run || 'false' }}
         run: python rss_alert.py
