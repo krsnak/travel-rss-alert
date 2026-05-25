@@ -26,6 +26,10 @@ Workflow je používá jako proměnné prostředí; credentials nejsou hardcoded
 
 Volitelně nastavte input `test_telegram=true`, pokud chcete pouze otestovat Telegram notifikaci bez zpracování RSS feedů. V tomto režimu aplikace pošle zprávu `✅ travel-rss-alert test OK` a skončí.
 
+Další volitelné inputs pro ruční spuštění:
+- `log_level` (default `INFO`) – nastaví verbositu logování (`DEBUG`, `INFO`, `WARNING`, `ERROR`).
+- `seed_on_first_run` (default `false`) – když je `true` a `seen.db` je prázdná, aplikace pouze označí aktuální položky feedů jako viděné (bez odeslání Telegram alertů), aby se při prvním deploymentu neposílaly staré články.
+
 ### Plánované spuštění
 
 Workflow běží automaticky každých 10 minut (cron `*/10 * * * *`) a kontroluje RSS feedy.
@@ -35,3 +39,9 @@ Workflow běží automaticky každých 10 minut (cron `*/10 * * * *`) a kontrolu
 Workflow používá `actions/cache` pro obnovu/uložení `seen.db` mezi běhy. Cache v GitHub Actions je **best-effort** (není to 100% garantované dlouhodobé úložiště), proto pro spolehlivý dlouhodobý perzistentní stav doporučujeme nasazení na VPS / Docker s trvalým volume.
 
 Pokud `seen.db` neexistuje, aplikace ho vytvoří automaticky při startu.
+
+
+## Nové ENV proměnné
+
+- `LOG_LEVEL` (default `INFO`) – úroveň logování aplikace.
+- `SEED_ON_FIRST_RUN` (default `false`) – seedování položek při prvním běhu nad prázdnou DB.
