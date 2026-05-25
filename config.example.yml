@@ -1,16 +1,20 @@
 feeds:
   - https://levnocestovani.cz/feed
+  - https://zaletsi.cz/feed
+  - https://www.cestujlevne.com/feed
+  - https://www.fly4free.com/feed/
+  - https://www.honzovyletenky.cz/feed/
 
 filters:
   include_keywords: []
 
   exclude_keywords:
+    - do Egypta
     - Egypt
-    - Egypta
     - egypt
+    - do Tuniska
     - Tunisko
-    - Tuniska
     - tunisko
+    - do Turecka
     - Turecko
-    - Turecka
     - turecko
