@@ -1,6 +1,16 @@
 feeds:
-  - url: "https://levnocestovani.cz/feed"
-    keywords:
-      - travel
-      - flight
-    max_items: 20
+  - https://levnocestovani.cz/feed
+
+filters:
+  include_keywords: []
+
+  exclude_keywords:
+    - Egypt
+    - Egypta
+    - egypt
+    - Tunisko
+    - Tuniska
+    - tunisko
+    - Turecko
+    - Turecka
+    - turecko
