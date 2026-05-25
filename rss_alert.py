@@ -100,10 +100,16 @@ def main() -> None:
     db_path = os.environ.get("DB_PATH", "seen.db")
 
     run_once = os.environ.get("RUN_ONCE", "").lower() == "true"
+    test_telegram = os.environ.get("TEST_TELEGRAM", "").lower() == "true"
     poll_seconds = int(os.environ.get("POLL_SECONDS", "600"))
 
     config = load_config(config_path)
     conn = ensure_db(db_path)
+
+    if test_telegram:
+        send_telegram_message(token, chat_id, "✅ travel-rss-alert test OK")
+        print("Test Telegram message sent")
+        return
 
     if run_once:
         process_feeds(config, conn, token, chat_id)

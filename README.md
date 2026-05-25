@@ -24,6 +24,8 @@ Workflow je používá jako proměnné prostředí; credentials nejsou hardcoded
 2. Vyberte workflow **RSS Alert**.
 3. Klikněte **Run workflow**.
 
+Volitelně nastavte input `test_telegram=true`, pokud chcete pouze otestovat Telegram notifikaci bez zpracování RSS feedů. V tomto režimu aplikace pošle zprávu `✅ travel-rss-alert test OK` a skončí.
+
 ### Plánované spuštění
 
 Workflow běží automaticky každých 10 minut (cron `*/10 * * * *`) a kontroluje RSS feedy.
