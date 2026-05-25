@@ -1,5 +1,5 @@
 feeds:
-  - url: "https://example.com/rss"
+  - url: "https://levnocestovani.cz/feed"
     keywords:
       - travel
       - flight
