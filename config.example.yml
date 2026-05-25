@@ -2,7 +2,6 @@ feeds:
   - url: https://levnocestovani.cz/feed
   - url: https://zaletsi.cz/feed
   - url: https://www.cestujlevne.com/feed
-  - url: https://www.fly4free.com/feed/
   - url: https://www.honzovyletenky.cz/feed/
 
 filters:
