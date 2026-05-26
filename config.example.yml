@@ -1,19 +1,27 @@
-feeds:
-  - url: https://levnocestovani.cz/feed
-  - url: https://zaletsi.cz/feed
-  - url: https://www.cestujlevne.com/feed
-  - url: https://www.honzovyletenky.cz/feed/
-
 filters:
   include_keywords: []
-
   exclude_keywords:
-    - do Egypta
     - Egypt
-    - egypt
-    - do Tuniska
     - Tunisko
-    - tunisko
-    - do Turecka
     - Turecko
-    - turecko
+
+feeds:
+  - url: https://levnocestovani.cz/feed
+    max_items: 30
+
+  - url: https://zaletsi.cz/feed
+    max_items: 30
+    # legacy alias: keywords => include_keywords
+    keywords:
+      - Maledivy
+
+  - url: https://www.cestujlevne.com/feed
+    max_items: 30
+    include_keywords:
+      - Bali
+      - Vietnam
+
+  - url: https://www.honzovyletenky.cz/feed/
+    max_items: 30
+    exclude_keywords:
+      - business class
