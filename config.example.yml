@@ -1,10 +1,14 @@
 filters:
   # Filtrování je case-insensitive, bez diakritiky a podporuje jednoduché české tvary slov.
+  # Prázdné include_keywords znamená: ber vše, pokud to neodpovídá exclude_keywords.
   include_keywords: []
   exclude_keywords:
     - Egypt
+    - Egypta
     - Tunisko
-    - Turecko
+    - Tuniska
+    - Tunis
+    - Tunisu
 
 feeds:
   - url: https://levnocestovani.cz/feed
@@ -12,17 +16,9 @@ feeds:
 
   - url: https://zaletsi.cz/feed
     max_items: 30
-    # legacy alias: keywords => include_keywords
-    keywords:
-      - Maledivy
 
   - url: https://www.cestujlevne.com/feed
     max_items: 30
-    include_keywords:
-      - Bali
-      - Vietnam
 
   - url: https://www.honzovyletenky.cz/feed/
     max_items: 30
-    exclude_keywords:
-      - business class
