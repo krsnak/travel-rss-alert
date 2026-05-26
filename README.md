@@ -2,6 +2,8 @@
 
 TG notifikace RSS feedů včetně filtrů.
 
+Filtry (`include_keywords`/`exclude_keywords`) jsou case-insensitive, ignorují diakritiku a používají prefixové párování slov, takže zachytí i běžné české tvary (např. `Turecko` → `Turecka`, `Turecku`).
+
 ## GitHub Actions (bez lokálního setupu)
 
 Repo obsahuje workflow `.github/workflows/rss-alert.yml`, který:

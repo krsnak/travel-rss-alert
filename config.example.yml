@@ -1,4 +1,5 @@
 filters:
+  # Filtrování je case-insensitive, bez diakritiky a podporuje jednoduché české tvary slov.
   include_keywords: []
   exclude_keywords:
     - Egypt

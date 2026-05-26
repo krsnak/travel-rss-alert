@@ -14,6 +14,26 @@ def test_passes_filters_include_and_exclude():
     assert rss_alert.passes_filters(entry, [], ["Bali"])[0] is False
 
 
+def test_keyword_matching_czech_forms_and_diacritics():
+    assert rss_alert.keyword_matches_text("Turecko", rss_alert.normalize_text("Zájezd do Turecka"))
+    assert rss_alert.keyword_matches_text("Turecko", rss_alert.normalize_text("Levný zájezd do Turecka"))
+    assert rss_alert.keyword_matches_text("Turecko", rss_alert.normalize_text("dovolená v Turecku"))
+
+    assert rss_alert.keyword_matches_text("Tunisko", rss_alert.normalize_text("Zájezd do Tuniska"))
+    assert rss_alert.keyword_matches_text("Tunisko", rss_alert.normalize_text("dovolená v Tunisku"))
+
+    assert rss_alert.keyword_matches_text("Egypt", rss_alert.normalize_text("Zájezd do Egypta"))
+    assert rss_alert.keyword_matches_text("Egypt", rss_alert.normalize_text("Marsa Matrouh v Egyptě"))
+
+    assert rss_alert.keyword_matches_text("Bali", rss_alert.normalize_text("Kréta s all-inclusive v letovisku Bali"))
+    assert rss_alert.keyword_matches_text("Vietnam", rss_alert.normalize_text("do Vietnamu"))
+
+
+def test_exclude_overrides_include():
+    entry = {"title": "Bali a Turecko super nabídka", "summary": "", "description": ""}
+    assert rss_alert.passes_filters(entry, ["Bali"], ["Turecko"]) == (False, "matched_exclude_keyword:Turecko")
+
+
 def test_feed_filters_global_and_overrides():
     global_filters = {"include_keywords": ["A"], "exclude_keywords": ["X"]}
     include, exclude = rss_alert.feed_filters({"url": "u"}, global_filters)
