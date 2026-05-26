@@ -15,6 +15,14 @@ on:
         description: Seed all current feed items as seen when DB is empty
         required: false
         default: "false"
+      dry_run:
+        description: Parse feeds, log decisions, do not send Telegram or write seen.db
+        required: false
+        default: "false"
+      ignore_seen:
+        description: Ignore seen.db for diagnostics (do not write seen.db)
+        required: false
+        default: "false"
   schedule:
     - cron: "0 * * * *"
 
@@ -31,6 +39,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Debug run context
+        run: |
+          echo "event_name=${{ github.event_name }}"
+          echo "ref=${{ github.ref }}"
+          echo "sha=${{ github.sha }}"
+          echo "utc_now=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -50,10 +65,20 @@ jobs:
           TEST_TELEGRAM: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.test_telegram || 'false' }}
           LOG_LEVEL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.log_level || 'INFO' }}
           SEED_ON_FIRST_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.seed_on_first_run || 'false' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run || 'false' }}
+          IGNORE_SEEN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ignore_seen || 'false' }}
         run: python rss_alert.py
 
       - name: Commit seen database state
+        if: env.DRY_RUN != 'true' && env.IGNORE_SEEN != 'true'
+        env:
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run || 'false' }}
+          IGNORE_SEEN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ignore_seen || 'false' }}
         run: |
+          if [ ! -f seen.db ]; then
+            echo "seen.db not found, nothing to commit"
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add seen.db
@@ -61,5 +86,5 @@ jobs:
             echo "No seen.db changes to commit"
           else
             git commit -m "chore: persist seen.db state"
-            git push origin main
+            git push
           fi
