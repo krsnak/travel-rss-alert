@@ -28,6 +28,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: rss-alert
@@ -39,12 +40,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
 
       - name: Debug run context
         run: |
           echo "event_name=${{ github.event_name }}"
           echo "ref=${{ github.ref }}"
           echo "sha=${{ github.sha }}"
+          echo "actor=${{ github.actor }}"
           echo "utc_now=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
       - name: Setup Python
@@ -70,10 +75,7 @@ jobs:
         run: python rss_alert.py
 
       - name: Commit seen database state
-        if: env.DRY_RUN != 'true' && env.IGNORE_SEEN != 'true'
-        env:
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run || 'false' }}
-          IGNORE_SEEN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ignore_seen || 'false' }}
+        if: ${{ !cancelled() && !failure() && !(github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') && !(github.event_name == 'workflow_dispatch' && github.event.inputs.ignore_seen == 'true') }}
         run: |
           if [ ! -f seen.db ]; then
             echo "seen.db not found, nothing to commit"
@@ -81,10 +83,11 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git status --short
           git add seen.db
           if git diff --cached --quiet; then
             echo "No seen.db changes to commit"
           else
             git commit -m "chore: persist seen.db state"
-            git push
+            git push origin HEAD:main
           fi
