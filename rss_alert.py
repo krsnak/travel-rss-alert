@@ -1,7 +1,9 @@
 import logging
 import os
+import re
 import sqlite3
 import time
+import unicodedata
 from pathlib import Path
 
 import feedparser
@@ -63,11 +65,27 @@ def mark_seen(conn: sqlite3.Connection, feed_url: str, entry_id: str) -> None:
 def matches_filters(entry: dict, filters: list[str]) -> tuple[bool, str]:
     if not filters:
         return True, "passed"
-    haystack = " ".join([entry.get("title", ""), entry.get("summary", ""), entry.get("description", "")]).lower()
+    haystack = normalize_text(" ".join([entry.get("title", ""), entry.get("summary", ""), entry.get("description", "")]))
     for keyword in filters:
-        if keyword.lower() in haystack:
-            return True, "passed"
+        if keyword_matches_text(keyword, haystack):
+            return True, f"matched_include_keyword:{keyword}"
     return False, "failed_include_filter"
+
+
+def normalize_text(text: str) -> str:
+    lowered = text.lower()
+    no_diacritics = "".join(ch for ch in unicodedata.normalize("NFKD", lowered) if not unicodedata.combining(ch))
+    return " ".join(no_diacritics.split())
+
+
+def keyword_matches_text(keyword: str, normalized_text: str) -> bool:
+    normalized_keyword = normalize_text(keyword)
+    if not normalized_keyword:
+        return False
+    if normalized_keyword.endswith("o") and len(normalized_keyword) > 1:
+        normalized_keyword = normalized_keyword[:-1]
+    pattern = rf"\b{re.escape(normalized_keyword)}\w*\b"
+    return re.search(pattern, normalized_text) is not None
 
 
 def passes_filters(entry: dict, include_keywords: list[str], exclude_keywords: list[str]) -> tuple[bool, str]:
@@ -78,9 +96,9 @@ def passes_filters(entry: dict, include_keywords: list[str], exclude_keywords: l
     if not exclude_keywords:
         return True, "passed"
 
-    haystack = " ".join([entry.get("title", ""), entry.get("summary", ""), entry.get("description", "")]).lower()
+    haystack = normalize_text(" ".join([entry.get("title", ""), entry.get("summary", ""), entry.get("description", "")]))
     for keyword in exclude_keywords:
-        if keyword.lower() in haystack:
+        if keyword_matches_text(keyword, haystack):
             return False, f"matched_exclude_keyword:{keyword}"
     return True, "passed"
 
