@@ -6,7 +6,7 @@ TG notifikace RSS feedů včetně filtrů.
 
 Repo obsahuje workflow `.github/workflows/rss-alert.yml`, který:
 - jde spustit ručně (`workflow_dispatch`),
-- běží plánovaně každých 10 minut,
+- běží plánovaně každou hodinu,
 - nainstaluje závislosti z `requirements.txt`,
 - a spustí `python rss_alert.py` v one-shot režimu (`RUN_ONCE=true`).
 
@@ -32,11 +32,15 @@ Další volitelné inputs pro ruční spuštění:
 
 ### Plánované spuštění
 
-Workflow běží automaticky každých 10 minut (cron `*/10 * * * *`) a kontroluje RSS feedy.
+Workflow běží automaticky každou hodinu (cron `0 * * * *`) a kontroluje RSS feedy.
 
 ### Persistovaný stav `seen.db`
 
-Workflow používá `actions/cache` pro obnovu/uložení `seen.db` mezi běhy. Cache v GitHub Actions je **best-effort** (není to 100% garantované dlouhodobé úložiště), proto pro spolehlivý dlouhodobý perzistentní stav doporučujeme nasazení na VPS / Docker s trvalým volume.
+Workflow perzistuje stav tak, že po každém běhu commitne změněný soubor `seen.db` zpět do větve `main`. Díky tomu se stav mezi běhy zachová spolehlivě i bez `actions/cache`.
+
+První seed aktuálních položek feedu provedete jednorázově ručním spuštěním workflow s inputem `seed_on_first_run=true`. Pokud je DB prázdná, položky se pouze označí jako viděné a neposílají se alerty.
+
+Po seedingu spouštějte workflow normálně (schedule nebo manual bez seed parametru) a budou se odesílat už jen nové položky, které ještě nejsou v `seen.db`.
 
 Pokud `seen.db` neexistuje, aplikace ho vytvoří automaticky při startu.
 
