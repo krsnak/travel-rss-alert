@@ -23,8 +23,6 @@ on:
         description: Ignore seen.db for diagnostics (do not write seen.db)
         required: false
         default: "false"
-  schedule:
-    - cron: "0 * * * *"
 
 permissions:
   contents: write
